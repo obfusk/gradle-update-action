@@ -1,0 +1,19 @@
+name: 'Gradle Update'
+description: "Update Gradle URL, SHA256 checksum, and wrapper"
+inputs:
+  gradle_wrapper:
+    description: 'The location of gradle-wrapper.jar'
+    default: gradle/wrapper/gradle-wrapper.jar
+  gradle_wrapper_properties:
+    description: 'The location of gradle-wrapper.properties'
+    default: gradle/wrapper/gradle-wrapper.properties
+  gradlew:
+    description: 'The location of the gradlew script to run'
+    default: ./gradlew
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.gradle_wrapper }}
+    - ${{ inputs.gradle_wrapper_properties }}
+    - ${{ inputs.gradlew }}
