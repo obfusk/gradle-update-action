@@ -8,6 +8,7 @@ gradle_wrapper_properties="${2:-gradle/wrapper/gradle-wrapper.properties}"
 gradlew="${3:-./gradlew}"
 outputs_file="${4:-}"
 
+transparency_log=https://fdroid.gitlab.io/gradle-transparency-log/checksums.json
 all_versions_url=https://services.gradle.org/versions/all
 jq_filter='.[] | select(.current) | .version, .downloadUrl, .checksumUrl, .wrapperChecksumUrl'
 
@@ -27,6 +28,21 @@ show_info() {
 get_properties_sum_and_url() {
   current_sum="$( grep -Po '(?<=^distributionSha256Sum=)(.*)' "$gradle_wrapper_properties" )"
   current_url="$( grep -Po '(?<=^distributionUrl=)(.*)' "$gradle_wrapper_properties" )"
+}
+
+check_transparency_log_checksum() {
+  local what="$1" url="$2" sum="$3" filter='.[env.url][0].sha256'
+  if [ "$( curl -sL -- "$transparency_log" | url="$url" jq -r "$filter" )" = "$sum" ]; then
+    echo "transparency log $what checksum OK"
+  else
+    echo "transparency log $what checksum mismatch" >&2
+    exit 1
+  fi
+}
+
+check_transparency_log() {
+  check_transparency_log_checksum download "$download_url" "$checksum"
+  check_transparency_log_checksum wrapper "${wrapper_checksum_url%.sha256}" "$wrapper_checksum"
 }
 
 check_download() {
@@ -86,6 +102,19 @@ update_wrapper() {
   "${gradlew}" wrapper
 }
 
+if [ ! -f "$gradle_wrapper" ]; then
+  echo "no such file: $gradle_wrapper" >&2
+  exit 1
+fi
+if [ ! -f "$gradle_wrapper_properties" ]; then
+  echo "no such file: $gradle_wrapper_properties" >&2
+  exit 1
+fi
+if [ ! -x "$gradlew" ]; then
+  echo "no such executable: $gradlew" >&2
+  exit 1
+fi
+
 show_info
 
 if [ -n "$outputs_file" ]; then
@@ -95,8 +124,10 @@ fi
 if check_url_unchanged; then
   check_properties_sum
   check_wrapper
+  check_transparency_log
   check_download
 else
+  check_transparency_log
   check_download
   update_gradle_version
   check_properties_sum_and_url
