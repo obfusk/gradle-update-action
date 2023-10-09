@@ -1,4 +1,4 @@
-name: 'Gradle Update'
+name: 'Gradle Version & Wrapper Update'
 description: "Update Gradle URL, SHA256 checksum, and wrapper"
 inputs:
   gradle_wrapper:

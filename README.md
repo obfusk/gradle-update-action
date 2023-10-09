@@ -1,4 +1,4 @@
-# Gradle Update Docker action
+# Gradle Version & Wrapper Update Docker action
 
 This action updates the Gradle URL, SHA256 checksum, and wrapper for
 your Android app.
