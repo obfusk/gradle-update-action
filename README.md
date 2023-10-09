@@ -34,6 +34,24 @@ The location of the `gradlew` script to run.
 
 Defaults to `./gradlew`.
 
+## Outputs
+
+### `version`
+
+The gradle version.
+
+### `download_url`
+
+The download URL.
+
+### `checksum`
+
+The checksum for the download.
+
+### `wrapper_checksum`
+
+The checksum for the wrapper.
+
 ## Example usage
 
 Put the following in `.github/workflows/gradle-update.yml`:
@@ -47,12 +65,13 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
     - name: Gradle update
+      id: gradle-update
       uses: obfusk/gradle-update-action@v1
     - name: Create pull request
       uses: peter-evans/create-pull-request@v5
       with:
-        title: "Gradle update"
-        commit-message: "Gradle update"
+        title: "Update Gradle to ${{ steps.gradle-update.outputs.version }}"
+        commit-message: "Update Gradle to ${{ steps.gradle-update.outputs.version }}"
         branch-suffix: timestamp
 on:
   schedule:

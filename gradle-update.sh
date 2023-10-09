@@ -6,6 +6,7 @@ set -euo pipefail
 gradle_wrapper="${1:-gradle/wrapper/gradle-wrapper.jar}"
 gradle_wrapper_properties="${2:-gradle/wrapper/gradle-wrapper.properties}"
 gradlew="${3:-./gradlew}"
+outputs_file="${4:-}"
 
 all_versions_url=https://services.gradle.org/versions/all
 jq_filter='.[] | select(.current) | .version, .downloadUrl, .checksumUrl, .wrapperChecksumUrl'
@@ -16,10 +17,12 @@ read -r version download_url checksum_url wrapper_checksum_url < \
 checksum="$( curl -sL -- "$checksum_url" | cut -c-64 )"
 wrapper_checksum="$( curl -sL -- "$wrapper_checksum_url" | cut -c-64 )"
 
-echo "version=$version"
-echo "download_url=$download_url"
-echo "checksum=$checksum"
-echo "wrapper_checksum=$wrapper_checksum"
+show_info() {
+  echo "version=$version"
+  echo "download_url=$download_url"
+  echo "checksum=$checksum"
+  echo "wrapper_checksum=$wrapper_checksum"
+}
 
 get_properties_sum_and_url() {
   current_sum="$( grep -Po '(?<=^distributionSha256Sum=)(.*)' "$gradle_wrapper_properties" )"
@@ -82,6 +85,12 @@ update_wrapper() {
   echo 'updating wrapper...'
   "${gradlew}" wrapper
 }
+
+show_info
+
+if [ -n "$outputs_file" ]; then
+  show_info >> "$outputs_file"
+fi
 
 if check_url_unchanged; then
   check_properties_sum

@@ -10,6 +10,15 @@ inputs:
   gradlew:
     description: 'The location of the gradlew script to run'
     default: ./gradlew
+outputs:
+  version:
+    description: 'The gradle version'
+  download_url:
+    description: 'The download URL'
+  checksum:
+    description: 'The checksum for the download'
+  wrapper_checksum:
+    description: 'The checksum for the wrapper'
 runs:
   using: 'docker'
   image: 'Dockerfile'
