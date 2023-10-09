@@ -66,7 +66,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Gradle update
       id: gradle-update
-      uses: obfusk/gradle-update-action@v1
+      uses: obfusk/gradle-update-action@v2
     - name: Create pull request
       uses: peter-evans/create-pull-request@v5
       with:
