@@ -68,7 +68,7 @@ jobs:
       id: gradle-update
       uses: obfusk/gradle-update-action@v3
     - name: Create pull request
-      uses: peter-evans/create-pull-request@v5
+      uses: peter-evans/create-pull-request@v6
       with:
         title: "Update Gradle to ${{ steps.gradle-update.outputs.version }}"
         commit-message: "Update Gradle to ${{ steps.gradle-update.outputs.version }}"
